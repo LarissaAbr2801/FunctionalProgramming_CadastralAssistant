@@ -12,22 +12,38 @@ public class Main {
     static final int BOUND = 100;
 
     public static void main(String[] args) {
-        System.out.println("Ведите цену за квадратный метр:");
-        int salePricePerSquareMeter = Integer.parseInt(scanner.nextLine());
+        try {
+            System.out.println("Ведите цену за квадратный метр:");
+            int salePricePerSquareMeter = Integer.parseInt(scanner.nextLine());
 
-        List<LandForSale> deals = generateDeals(new ArrayList<>(),
-                DEALS_QUANTITY, salePricePerSquareMeter);
+            if (salePricePerSquareMeter <= 0) {
+                System.out.println("Введите число больше 0");
+                return;
+            }
 
-        Predicate<LandForSale> integrity = x -> x.getRecommendedSalePrice() <= x.getSalePrice();
+            List<LandForSale> deals = generateDeals(new ArrayList<>(),
+                    DEALS_QUANTITY, salePricePerSquareMeter);
 
-        Function<List<LandForSale>, List<LandForSale>> function = checkDealsIntegrity(deals, integrity);
+            Predicate<LandForSale> integrity = x -> x.getRecommendedSalePrice() <= x.getSalePrice();
 
-        System.out.println("Честные сделки: " + function.apply(deals));
+            Function<List<LandForSale>, List<LandForSale>> function = checkDealsIntegrity(deals, integrity);
+
+            System.out.println("Честные сделки: " + function.apply(deals));
+        } catch (Exception e) {
+            System.out.println("Вы ввели данные не корректно!");
+        } finally {
+            scanner.close();
+        }
     }
 
     public static List<LandForSale> generateDeals(List<LandForSale> deals, int dealsQuantity, int salePricePerSquareMeter) {
         if (dealsQuantity == 0) return deals;
 
+        if (dealsQuantity < 0) {
+            System.out.println("Количество сделок не может быть меньше 0");
+            return null;
+        }
+        
         deals.add(new LandForSale(random.nextInt(ORIGIN, BOUND),
                 random.nextInt(ORIGIN, BOUND), salePricePerSquareMeter,
                 random.nextLong(ORIGIN * 100_000, BOUND * 100_000)));
